@@ -88,7 +88,7 @@ class TweetTableViewCell: UITableViewCell {
 
     func setImageToPreview(url: NSURL) {
         imagePreview.setImageWithURL(url)
-        imagePreview.setImageWithURLRequest(NSURLRequest(URL: url), placeholderImage: nil, success: { (request: NSURLRequest, response: NSHTTPURLResponse?, img: UIImage) in
+        imagePreview.setImageWithURLRequest(NSURLRequest(URL: url), placeholderImage: UIImage(), success: { (request: NSURLRequest, response: NSHTTPURLResponse?, img: UIImage) in
             self.callback?.reloadData()
         }) { (request: NSURLRequest, response: NSHTTPURLResponse?, err: NSError) in
             print(err.localizedDescription)
@@ -96,15 +96,12 @@ class TweetTableViewCell: UITableViewCell {
         imagePreview.hidden = false
         topReplyButtonConstraint.active = true
         topToTweetTextReplyButton.active = false
-//        self.layoutIfNeeded()
     }
     
     func noneImage() {
         imagePreview.hidden = true
         topReplyButtonConstraint.active = false
         topToTweetTextReplyButton.active = true
-        topToTweetTextReplyButton.relation = NSLayoutRelation.Equal
-        topToTweetTextReplyButton.
     }
     
     @IBAction func onShare(sender: UIButton) {

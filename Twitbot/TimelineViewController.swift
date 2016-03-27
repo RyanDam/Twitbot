@@ -24,7 +24,6 @@ class TimelineViewController: UIViewController, UIScrollViewDelegate {
         mainTableView.estimatedRowHeight = 100
         mainTableView.rowHeight = UITableViewAutomaticDimension
         fetchDataTimeline()
-        
         refreshControl.addTarget(self, action: #selector(TimelineViewController.refreshControlAction(_:)), forControlEvents: UIControlEvents.ValueChanged)
         mainTableView.insertSubview(refreshControl, atIndex: 0)
         
@@ -216,12 +215,12 @@ extension TimelineViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.avatar.setImageWithURL(avatar)
             }
         }
-        
         cell.avatar.layer.cornerRadius = 8
         cell.delegate = self
         cell.isLiked = tweet.isFavourited!
         cell.isRetweeted = tweet.isUserRetweeted!
-        
+        cell.imagePreview.layer.cornerRadius = 8
+        cell.imagePreview.clipsToBounds = true
         return cell
     }
     

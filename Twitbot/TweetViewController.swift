@@ -14,6 +14,8 @@ class TweetViewController: UIViewController {
     @IBOutlet weak var retweetLabelIndicate: UILabel!
     @IBOutlet weak var retweetImageIndicate: UIImageView!
     @IBOutlet weak var userAvatar: UIImageView!
+    @IBOutlet weak var topConstraintReplyButton: NSLayoutConstraint!
+    @IBOutlet weak var imagePreview: UIImageView!
     @IBOutlet weak var username: UILabel!
     @IBOutlet weak var userScreenName: UILabel!
     @IBOutlet weak var timestamp: UILabel!
@@ -49,7 +51,8 @@ class TweetViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        imagePreview.layer.cornerRadius = 8
+        imagePreview.clipsToBounds = true
         if let tweet = self.tweet {
             if tweet.favoritesCount > 2000 {
                 self.favouriteCount.text = "\(Int(tweet.favoritesCount/1000))K"
@@ -106,10 +109,33 @@ class TweetViewController: UIViewController {
             
             self.userAvatar.layer.cornerRadius = 8
             self.isLiked = tweet.isFavourited!
+            
+            if let medias = tweet.media {
+                setImageToPreview(medias[0].imageUrl!)
+            }
+            else {
+                noneImage()
+            }
         }
         
     }
 
+    func setImageToPreview(url: NSURL) {
+        imagePreview.setImageWithURL(url)
+        imagePreview.setImageWithURLRequest(NSURLRequest(URL: url), placeholderImage: UIImage(), success: { (request: NSURLRequest, response: NSHTTPURLResponse?, img: UIImage) in
+            // code
+        }) { (request: NSURLRequest, response: NSHTTPURLResponse?, err: NSError) in
+            print(err.localizedDescription)
+        }
+        imagePreview.hidden = false
+        topConstraintReplyButton.constant = 8
+    }
+    
+    func noneImage() {
+        imagePreview.hidden = true
+        topConstraintReplyButton.constant = -130
+    }
+    
     func showRetweetIndicate(name: String) {
         retweetImageIndicate.hidden = false
         retweetLabelIndicate.hidden = false
