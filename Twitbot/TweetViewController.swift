@@ -11,10 +11,12 @@ import UIKit
 class TweetViewController: UIViewController {
     
     @IBOutlet weak var avatarTopConstraint: NSLayoutConstraint!
+    
     @IBOutlet weak var retweetLabelIndicate: UILabel!
     @IBOutlet weak var retweetImageIndicate: UIImageView!
     @IBOutlet weak var userAvatar: UIImageView!
     @IBOutlet weak var topConstraintReplyButton: NSLayoutConstraint!
+    
     @IBOutlet weak var imagePreview: UIImageView!
     @IBOutlet weak var username: UILabel!
     @IBOutlet weak var userScreenName: UILabel!
@@ -51,6 +53,10 @@ class TweetViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let logoImageView = UIImageView(image: UIImage(named: "twitter"))
+        self.navigationItem.titleView = logoImageView
+        
         imagePreview.layer.cornerRadius = 8
         imagePreview.clipsToBounds = true
         if let tweet = self.tweet {
@@ -117,7 +123,6 @@ class TweetViewController: UIViewController {
                 noneImage()
             }
         }
-        
     }
 
     func setImageToPreview(url: NSURL) {
@@ -133,7 +138,7 @@ class TweetViewController: UIViewController {
     
     func noneImage() {
         imagePreview.hidden = true
-        topConstraintReplyButton.constant = -130
+        topConstraintReplyButton.constant = -150
     }
     
     func showRetweetIndicate(name: String) {

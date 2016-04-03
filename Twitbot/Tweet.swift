@@ -18,15 +18,17 @@ class Tweet: NSObject {
     var isFavourited: Bool? = false
     var isUserRetweeted: Bool? = false
     var isRetweeted: Bool = false
-    var sourceTweet: Tweet?
-    var media: [Media]?
+    var sourceTweet: Tweet? = nil
+    var media: [Media]? = nil
     
     
     init(dictionary: NSDictionary) {
         text = dictionary["text"] as? String
         retweetCount = (dictionary["retweet_count"] as? Int) ?? 0
         favoritesCount = (dictionary["favorite_count"] as? Int) ?? 0
+        
         user = User(dictionary: dictionary["user"] as! NSDictionary)
+        
         isFavourited = dictionary["favorited"] as? Bool
         idStr = dictionary["id_str"] as? String
         isUserRetweeted = dictionary["retweeted"] as? Bool

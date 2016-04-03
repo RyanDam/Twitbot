@@ -20,6 +20,9 @@ class TwitterClient: BDBOAuth1SessionManager {
     func homeTimeline(success: ([Tweet]) -> Void, failture: (NSError) -> Void) {
         GET("1.1/statuses/home_timeline.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) in
             let dictionaries = response as! [NSDictionary]
+            
+//            print(dictionaries)
+            
             let tweets = Tweet.TweetsFromArray(dictionaries)
             success(tweets)
             }, failure: { (task: NSURLSessionDataTask?, err: NSError) in
@@ -29,6 +32,28 @@ class TwitterClient: BDBOAuth1SessionManager {
     
     func userTimeline(success: ([Tweet]) -> Void, failture: (NSError) -> Void) {
         GET("1.1/statuses/user_timeline.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) in
+            let dictionaries = response as! [NSDictionary]
+            let tweets = Tweet.TweetsFromArray(dictionaries)
+            success(tweets)
+            }, failure: { (task: NSURLSessionDataTask?, err: NSError) in
+                failture(err)
+        })
+    }
+    
+    func userTimeline(withId id: String, success: ([Tweet]) -> Void, failture: (NSError) -> Void) {
+        var parameter: [String: AnyObject] = [:]
+        parameter["user_id"] = id
+        GET("1.1/statuses/user_timeline.json", parameters: parameter, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) in
+            let dictionaries = response as! [NSDictionary]
+            let tweets = Tweet.TweetsFromArray(dictionaries)
+            success(tweets)
+            }, failure: { (task: NSURLSessionDataTask?, err: NSError) in
+                failture(err)
+        })
+    }
+    
+    func mentionTimeline(success: ([Tweet]) -> Void, failture: (NSError) -> Void) {
+        GET("1.1/statuses/mentions_timeline.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) in
             let dictionaries = response as! [NSDictionary]
             let tweets = Tweet.TweetsFromArray(dictionaries)
             success(tweets)

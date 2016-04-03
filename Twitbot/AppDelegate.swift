@@ -16,15 +16,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         if User.currentUser != nil {
-            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("TweetNavigationController")
+            let vc = storyboard.instantiateViewControllerWithIdentifier("MainscreenViewController")
             self.window?.rootViewController = vc
         }
         
         NSNotificationCenter.defaultCenter().addObserverForName(User.USER_DID_LOGOUT_NOTIFICATION, object: nil, queue: NSOperationQueue.mainQueue()) { (noti: NSNotification) in
-            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+            let vc = storyboard.instantiateInitialViewController()
             self.window?.rootViewController = vc
         }
         return true

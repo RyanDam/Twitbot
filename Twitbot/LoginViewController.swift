@@ -12,7 +12,7 @@ import BDBOAuth1Manager
 class LoginViewController: UIViewController {
     
     @IBOutlet weak var mainLoginButton: UIButton!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

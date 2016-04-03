@@ -20,7 +20,6 @@ class TweetTableViewCell: UITableViewCell {
     
     var callback: UITableView?
     
-    @IBOutlet weak var topToTweetTextReplyButton: NSLayoutConstraint!
     @IBOutlet weak var topReplyButtonConstraint: NSLayoutConstraint!
     @IBOutlet weak var imagePreview: UIImageView!
     @IBOutlet weak var retweetButton: UIButton!
@@ -63,22 +62,16 @@ class TweetTableViewCell: UITableViewCell {
         retweetLabelIndicate.hidden = false
         retweetLabelIndicate.text = "\(name) retweeted:"
         avatarTopContraint.constant = 16
-//        self.contentView.frame.origin.y = origionY + 16
     }
     
     func hideRetweetIndicate() {
         retweetImageIndicate.hidden = true
         retweetLabelIndicate.hidden = true
         avatarTopContraint.constant = -8
-//        self.contentView.frame.origin.y = origionY - 16
     }
-    
-//    var origionY: CGFloat = 0
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-//        origionY = self.contentView.frame.origin.y
     }
 
     override func setSelected(selected: Bool, animated: Bool) {
@@ -94,14 +87,12 @@ class TweetTableViewCell: UITableViewCell {
             print(err.localizedDescription)
         }
         imagePreview.hidden = false
-        topReplyButtonConstraint.active = true
-        topToTweetTextReplyButton.active = false
+        topReplyButtonConstraint.constant = 8
     }
     
     func noneImage() {
         imagePreview.hidden = true
-        topReplyButtonConstraint.active = false
-        topToTweetTextReplyButton.active = true
+        topReplyButtonConstraint.constant = -150
     }
     
     @IBAction func onShare(sender: UIButton) {
