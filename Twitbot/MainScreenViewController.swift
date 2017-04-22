@@ -45,22 +45,22 @@ class MainScreenViewController: UIViewController {
         super.viewDidLoad()
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
-        let profileTimeline = storyboard.instantiateViewControllerWithIdentifier("ProfileNavigationController") as! UINavigationController
+        let profileTimeline = storyboard.instantiateViewController(withIdentifier: "ProfileNavigationController") as! UINavigationController
         (profileTimeline.viewControllers[0] as! ProfileViewController).sideMenuCallback = self
         (profileTimeline.viewControllers[0] as! ProfileViewController).user = User.currentUser
         viewControllers.append(profileTimeline)
         
-        let homeTimeline = storyboard.instantiateViewControllerWithIdentifier("HomeTweetNavigationController") as! UINavigationController
+        let homeTimeline = storyboard.instantiateViewController(withIdentifier: "HomeTweetNavigationController") as! UINavigationController
         (homeTimeline.viewControllers[0] as! TimelineViewController).sideMenuCallback = self
-        (homeTimeline.viewControllers[0] as! TimelineViewController).timelineMode = FetchDataMode.HomeTimeline
+        (homeTimeline.viewControllers[0] as! TimelineViewController).timelineMode = FetchDataMode.homeTimeline
         viewControllers.append(homeTimeline)
         
-        let mentionTimeline = storyboard.instantiateViewControllerWithIdentifier("HomeTweetNavigationController") as! UINavigationController
+        let mentionTimeline = storyboard.instantiateViewController(withIdentifier: "HomeTweetNavigationController") as! UINavigationController
         (mentionTimeline.viewControllers[0] as! TimelineViewController).sideMenuCallback = self
-        (mentionTimeline.viewControllers[0] as! TimelineViewController).timelineMode = FetchDataMode.MentionTimeline
+        (mentionTimeline.viewControllers[0] as! TimelineViewController).timelineMode = FetchDataMode.mentionTimeline
         viewControllers.append(mentionTimeline)
         
-        self.menuViewController = storyboard.instantiateViewControllerWithIdentifier("MenuViewController") as? MenuViewController
+        self.menuViewController = storyboard.instantiateViewController(withIdentifier: "MenuViewController") as? MenuViewController
         menuViewController?.delegate = self
         menuViewController?.dataSource = self
         menuView.addSubview((self.menuViewController?.view)!)
@@ -71,11 +71,11 @@ class MainScreenViewController: UIViewController {
         
         let shadowPath = UIBezierPath(rect: viewContainer.bounds)
         viewContainer.layer.masksToBounds = false
-        viewContainer.layer.shadowColor = UIColor.blackColor().CGColor
+        viewContainer.layer.shadowColor = UIColor.black.cgColor
         viewContainer.layer.shadowOffset = CGSize(width: 0, height: 0.5)
         viewContainer.layer.shadowOpacity = 0.2
         viewContainer.layer.shadowRadius = 16
-        viewContainer.layer.shadowPath = shadowPath.CGPath
+        viewContainer.layer.shadowPath = shadowPath.cgPath
     }
 
     override func didReceiveMemoryWarning() {
@@ -85,13 +85,13 @@ class MainScreenViewController: UIViewController {
     
     var constraintDefault: CGFloat = 0
     
-    @IBAction func onSwipe(sender: UIPanGestureRecognizer) {
-        let translation = sender.translationInView(self.view)
-        let velocity = sender.velocityInView(self.view)
-        if sender.state == UIGestureRecognizerState.Began {
+    @IBAction func onSwipe(_ sender: UIPanGestureRecognizer) {
+        let translation = sender.translation(in: self.view)
+        let velocity = sender.velocity(in: self.view)
+        if sender.state == UIGestureRecognizerState.began {
             
         }
-        else if sender.state == UIGestureRecognizerState.Changed {
+        else if sender.state == UIGestureRecognizerState.changed {
             viewContainerConstraint.constant = constraintDefault + translation.x
             var scale = (view.frame.size.width - viewContainerConstraint.constant) / view.frame.size.width
             if scale < 0.8 {
@@ -100,9 +100,9 @@ class MainScreenViewController: UIViewController {
             else if scale > 1 {
                 scale = 1
             }
-            viewContainer.transform = CGAffineTransformMakeScale(scale, scale)
+            viewContainer.transform = CGAffineTransform(scaleX: scale, y: scale)
         }
-        else if sender.state == UIGestureRecognizerState.Ended {
+        else if sender.state == UIGestureRecognizerState.ended {
             if (velocity.x >= 0) {
                 sideMenuStateOpened = true
             }
@@ -125,7 +125,7 @@ extension MainScreenViewController: MenuViewDataSource, MenuViewDelegate {
         return viewControllers.count
     }
     
-    func getTitleAtPosition(position: Int) -> String {
+    func getTitleAtPosition(_ position: Int) -> String {
         switch position {
         case 0:
             return "Profile"
@@ -140,7 +140,7 @@ extension MainScreenViewController: MenuViewDataSource, MenuViewDelegate {
         }
     }
     
-    func getViewControllerAtPosition(position: Int) -> UIViewController {
+    func getViewControllerAtPosition(_ position: Int) -> UIViewController {
         return viewControllers[position]
     }
 }
@@ -148,18 +148,18 @@ extension MainScreenViewController: MenuViewDataSource, MenuViewDelegate {
 extension MainScreenViewController: SideMenuCallback {
     
     func openSideMenu() {
-        UIView.animateWithDuration(0.2, animations: {
+        UIView.animate(withDuration: 0.2, animations: {
             self.viewContainerConstraint.constant = self.view.frame.size.width - 130
-            self.viewContainer.transform = CGAffineTransformMakeScale(0.8, 0.8)
+            self.viewContainer.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
             self.constraintDefault = self.view.frame.size.width - 130
             self.view.layoutIfNeeded()
         })
     }
     
     func closeSideMenu() {
-        UIView.animateWithDuration(0.2, animations: {
+        UIView.animate(withDuration: 0.2, animations: {
             self.viewContainerConstraint.constant = 0
-            self.viewContainer.transform = CGAffineTransformMakeScale(1, 1)
+            self.viewContainer.transform = CGAffineTransform(scaleX: 1, y: 1)
             self.constraintDefault = 0
             self.view.layoutIfNeeded()
             })
@@ -169,7 +169,7 @@ extension MainScreenViewController: SideMenuCallback {
         sideMenuStateOpened = !sideMenuStateOpened
     }
     
-    func getIconAtPosition(position: Int) -> UIImage {
+    func getIconAtPosition(_ position: Int) -> UIImage {
         switch position {
         case 0:
             return UIImage(named: "profile")!

@@ -9,8 +9,8 @@
 import UIKit
 
 class Media: NSObject {
-    var imageUrl: NSURL?
+    var imageUrl: URL?
     init(dictionary: NSDictionary) {
-        imageUrl = NSURL(string: dictionary["media_url"] as! String)!
+        imageUrl = URL(string: dictionary["media_url"] as! String)!
     }
 }

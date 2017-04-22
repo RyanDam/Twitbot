@@ -14,9 +14,9 @@ protocol MenuViewDelegate: NSObjectProtocol {
 
 protocol MenuViewDataSource: NSObjectProtocol {
     func getSizeOfData() -> Int
-    func getTitleAtPosition(position: Int) -> String
-    func getViewControllerAtPosition(position: Int) -> UIViewController
-    func getIconAtPosition(position: Int) -> UIImage
+    func getTitleAtPosition(_ position: Int) -> String
+    func getViewControllerAtPosition(_ position: Int) -> UIViewController
+    func getIconAtPosition(_ position: Int) -> UIImage
 }
 
 class MenuViewController: UIViewController {
@@ -34,7 +34,7 @@ class MenuViewController: UIViewController {
         let user = User.currentUser
         username.text = user?.name!
         userScreenName.text = "@\((user?.screenName)!)"
-        userAvatar.setImageWithURL((user?.profileUrl)!)
+        userAvatar.setImageWith((user?.profileUrl)! as URL)
         menuTableView.dataSource = self
         menuTableView.delegate = self
         userAvatar.clipsToBounds = true
@@ -49,32 +49,32 @@ class MenuViewController: UIViewController {
 }
 
 extension MenuViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return (dataSource?.getSizeOfData())! + 1 ?? 0
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("MenuTableViewCell", forIndexPath: indexPath) as! MenuTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MenuTableViewCell", for: indexPath) as! MenuTableViewCell
         
-        if indexPath.row == (dataSource?.getSizeOfData())! {
+        if (indexPath as NSIndexPath).row == (dataSource?.getSizeOfData())! {
             cell.titleLabel.text = "Log out"
         }
         else {
-            cell.titleLabel.text = dataSource?.getTitleAtPosition(indexPath.row)
+            cell.titleLabel.text = dataSource?.getTitleAtPosition((indexPath as NSIndexPath).row)
         }
         
-        cell.iconMenu.image = dataSource?.getIconAtPosition(indexPath.row)
+        cell.iconMenu.image = dataSource?.getIconAtPosition((indexPath as NSIndexPath).row)
         
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        if indexPath.row == (dataSource?.getSizeOfData())! {
-            TwitterClient.sharedInstance.logout()
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        if (indexPath as NSIndexPath).row == (dataSource?.getSizeOfData())! {
+            TwitterClient.sharedInstance?.logout()
         }
         else {
-            delegate?.onChangedView(target: (dataSource?.getViewControllerAtPosition(indexPath.row))!)
+            delegate?.onChangedView(target: (dataSource?.getViewControllerAtPosition((indexPath as NSIndexPath).row))!)
         }
         
     }

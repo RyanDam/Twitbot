@@ -21,9 +21,9 @@ class LoginViewController: UIViewController {
         mainLoginButton.layer.cornerRadius = 8
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        UIApplication.sharedApplication().statusBarStyle = .LightContent
+        UIApplication.shared.statusBarStyle = .lightContent
     }
     
     override func didReceiveMemoryWarning() {
@@ -31,10 +31,10 @@ class LoginViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    @IBAction func onLogin(sender: AnyObject) {
-        TwitterClient.sharedInstance.login({ () in
-            self.performSegueWithIdentifier("LoginSegue", sender: self)
-        }) { (err: NSError) in
+    @IBAction func onLogin(_ sender: AnyObject) {
+        TwitterClient.sharedInstance?.login({ () in
+            self.performSegue(withIdentifier: "LoginSegue", sender: self)
+        }) { (err: Error) in
             print(err.localizedDescription)
         }
     }

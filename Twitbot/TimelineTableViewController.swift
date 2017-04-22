@@ -7,16 +7,16 @@
 //
 
 import UIKit
-import SwiftLoader
+//import SwiftLoader
 
 enum FetchDataMode {
-    case HomeTimeline
-    case ProfileTimeline
-    case MentionTimeline
+    case homeTimeline
+    case profileTimeline
+    case mentionTimeline
 }
 
 protocol ScrollStateChangeDelegate: NSObjectProtocol {
-    func onScrollChange(sender: UIScrollView)
+    func onScrollChange(_ sender: UIScrollView)
 }
 
 class TimelineTableViewController: NSObject, UITableViewDelegate, UITableViewDataSource {
@@ -26,7 +26,7 @@ class TimelineTableViewController: NSObject, UITableViewDelegate, UITableViewDat
     var tweets: [Tweet]?
     var mainTableView: UITableView = UITableView()
     
-    var timelineMode: FetchDataMode = .HomeTimeline
+    var timelineMode: FetchDataMode = .homeTimeline
     
     var scrollStateChangeDelegate: ScrollStateChangeDelegate?
     
@@ -43,18 +43,18 @@ class TimelineTableViewController: NSObject, UITableViewDelegate, UITableViewDat
         fetchDataTimeline()
         mainTableView.estimatedRowHeight = 100
         mainTableView.rowHeight = UITableViewAutomaticDimension
-        refreshControl.addTarget(self, action: #selector(TimelineTableViewController.refreshControlAction(_:)), forControlEvents: UIControlEvents.ValueChanged)
-        mainTableView.insertSubview(refreshControl, atIndex: 0)
+        refreshControl.addTarget(self, action: #selector(TimelineTableViewController.refreshControlAction(_:)), for: UIControlEvents.valueChanged)
+        mainTableView.insertSubview(refreshControl, at: 0)
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tweets?.count ?? 0
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("TweetCell", forIndexPath: indexPath) as! TweetTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TweetCell", for: indexPath) as! TweetTableViewCell
         
-        let tweet = tweets![indexPath.row]
+        let tweet = tweets![(indexPath as NSIndexPath).row]
         
         if let medias = tweet.media {
             cell.setImageToPreview(medias[0].imageUrl!)
@@ -93,8 +93,8 @@ class TimelineTableViewController: NSObject, UITableViewDelegate, UITableViewDat
                 timeRet = "\(Int(time/(60*60*24)))d"
             }
             else {
-                let calendar = NSCalendar.currentCalendar()
-                let comp = calendar.components([.Day, .Month, .Year], fromDate: date)
+                let calendar = Calendar.current
+                let comp = (calendar as NSCalendar).components([.day, .month, .year], from: date as Date)
                 timeRet = "\(comp.day)\\\(comp.month)\\\(comp.year)"
             }
             cell.timestamp.text = timeRet
@@ -106,7 +106,7 @@ class TimelineTableViewController: NSObject, UITableViewDelegate, UITableViewDat
             cell.username.text = tweet.sourceTweet!.user!.name
             cell.userScreenName.text = "@\(tweet.sourceTweet!.user!.screenName!)"
             if let avatar = tweet.sourceTweet!.user!.profileUrl {
-                cell.avatar.setImageWithURL(avatar)
+                cell.avatar.setImageWith(avatar as URL)
             }
         }
         else {
@@ -115,7 +115,7 @@ class TimelineTableViewController: NSObject, UITableViewDelegate, UITableViewDat
             cell.username.text = tweet.user!.name
             cell.userScreenName.text = "@\(tweet.user!.screenName!)"
             if let avatar = tweet.user!.profileUrl {
-                cell.avatar.setImageWithURL(avatar)
+                cell.avatar.setImageWith(avatar as URL)
             }
         }
         cell.avatar.layer.cornerRadius = 8
@@ -130,23 +130,23 @@ class TimelineTableViewController: NSObject, UITableViewDelegate, UITableViewDat
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
 }
 
 extension TimelineTableViewController: TweetTableViewCellDelegate {
-    func onShare(sender: TweetTableViewCell) {
+    func onShare(_ sender: TweetTableViewCell) {
         
     }
-    func onTweet(sender: TweetTableViewCell) {
-        let indexPath = mainTableView.indexPathForCell(sender)
+    func onTweet(_ sender: TweetTableViewCell) {
+        let indexPath = mainTableView.indexPath(for: sender)
         if let index = indexPath {
-            let tweet = self.tweets![index.row]
+            let tweet = self.tweets![(index as NSIndexPath).row]
             if !tweet.isRetweeted {
-                TwitterClient.sharedInstance.retweet(tweet.idStr!, success: { (tweeted: Tweet?) in
-                    let tweet = self.tweets![index.row]
+                TwitterClient.sharedInstance?.retweet(tweet.idStr!, success: { (tweeted: Tweet?) in
+                    let tweet = self.tweets![(index as NSIndexPath).row]
                     tweet.retweetCount += 1
                     if tweet.retweetCount > 2000 {
                         sender.retweetCount.text = "\(Int(tweet.retweetCount/1000))K"
@@ -155,14 +155,14 @@ extension TimelineTableViewController: TweetTableViewCellDelegate {
                         sender.retweetCount.text = "\(Int(tweet.retweetCount))"
                     }
                     sender.isRetweeted = !sender.isRetweeted
-                    self.tweets![index.row].isUserRetweeted = sender.isRetweeted
-                    }, failure: { (err: NSError) in
+                    self.tweets![(index as NSIndexPath).row].isUserRetweeted = sender.isRetweeted
+                    }, failure: { (err: Error) in
                         print(err.localizedDescription)
                 })
             }
             else {
-                TwitterClient.sharedInstance.unRetweet(tweet.idStr!, success: { (tweeted: Tweet?) in
-                    let tweet = self.tweets![index.row]
+                TwitterClient.sharedInstance?.unRetweet(tweet.idStr!, success: { (tweeted: Tweet?) in
+                    let tweet = self.tweets![(index as NSIndexPath).row]
                     tweet.retweetCount -= 1
                     if tweet.retweetCount > 2000 {
                         sender.retweetCount.text = "\(Int(tweet.retweetCount/1000))K"
@@ -171,20 +171,20 @@ extension TimelineTableViewController: TweetTableViewCellDelegate {
                         sender.retweetCount.text = "\(Int(tweet.retweetCount))"
                     }
                     sender.isRetweeted = !sender.isRetweeted
-                    self.tweets![index.row].isUserRetweeted = sender.isRetweeted
-                    }, failure: { (err: NSError) in
+                    self.tweets![(index as NSIndexPath).row].isUserRetweeted = sender.isRetweeted
+                    }, failure: { (err: Error) in
                         print(err.localizedDescription)
                 })
             }
         }
     }
-    func onLike(sender: TweetTableViewCell) {
-        let indexPath = mainTableView.indexPathForCell(sender)
+    func onLike(_ sender: TweetTableViewCell) {
+        let indexPath = mainTableView.indexPath(for: sender)
         if let index = indexPath {
-            let tweet = self.tweets![index.row]
+            let tweet = self.tweets![(index as NSIndexPath).row]
             if !tweet.isFavourited! {
-                TwitterClient.sharedInstance.favorite(tweet.idStr!, success: { (tweeted: Tweet?) in
-                    let tweet = self.tweets![index.row]
+                TwitterClient.sharedInstance?.favorite(tweet.idStr!, success: { (tweeted: Tweet?) in
+                    let tweet = self.tweets![(index as NSIndexPath).row]
                     tweet.favoritesCount += 1
                     if tweet.favoritesCount > 2000 {
                         sender.likeCount.text = "\(Int(tweet.favoritesCount/1000))K"
@@ -193,14 +193,14 @@ extension TimelineTableViewController: TweetTableViewCellDelegate {
                         sender.likeCount.text = "\(Int(tweet.favoritesCount))"
                     }
                     sender.isLiked = !sender.isLiked
-                    self.tweets![index.row].isFavourited = sender.isLiked
-                    }, failure: { (err: NSError) in
+                    self.tweets![(index as NSIndexPath).row].isFavourited = sender.isLiked
+                    }, failure: { (err: Error) in
                         print(err.localizedDescription)
                 })
             }
             else {
-                TwitterClient.sharedInstance.unFavorite(tweet.idStr!, success: { (tweeted: Tweet?) in
-                    let tweet = self.tweets![index.row]
+                TwitterClient.sharedInstance?.unFavorite(tweet.idStr!, success: { (tweeted: Tweet?) in
+                    let tweet = self.tweets![(index as NSIndexPath).row]
                     tweet.favoritesCount -= 1
                     if tweet.favoritesCount > 2000 {
                         sender.likeCount.text = "\(Int(tweet.favoritesCount/1000))K"
@@ -209,8 +209,8 @@ extension TimelineTableViewController: TweetTableViewCellDelegate {
                         sender.likeCount.text = "\(Int(tweet.favoritesCount))"
                     }
                     sender.isLiked = !sender.isLiked
-                    self.tweets![index.row].isFavourited = sender.isLiked
-                    }, failure: { (err: NSError) in
+                    self.tweets![(index as NSIndexPath).row].isFavourited = sender.isLiked
+                    }, failure: { (err: Error) in
                         print(err.localizedDescription)
                 })
             }
@@ -221,41 +221,41 @@ extension TimelineTableViewController: TweetTableViewCellDelegate {
 extension TimelineTableViewController: UIScrollViewDelegate {
     func fetchDataTimeline() {
         showWaitingIndicate()
-        if timelineMode == .HomeTimeline {
-            TwitterClient.sharedInstance.homeTimeline({ (tweets: [Tweet]) in
+        if timelineMode == .homeTimeline {
+            TwitterClient.sharedInstance?.homeTimeline({ (tweets: [Tweet]) in
                 self.tweets = tweets
                 self.mainTableView.reloadData()
                 self.hideWaitingIndicate()
                 self.isMoreDataLoading = false
-            }) { (err: NSError) in
+            }) { (err: Error) in
                 self.showErrorIndicate()
                 print("Err")
                 print(err.localizedDescription)
                 self.isMoreDataLoading = false
             }
         }
-        else if timelineMode == .MentionTimeline {
-            TwitterClient.sharedInstance.mentionTimeline({ (tweets: [Tweet]) in
+        else if timelineMode == .mentionTimeline {
+            TwitterClient.sharedInstance?.mentionTimeline({ (tweets: [Tweet]) in
                 self.tweets = tweets
                 self.mainTableView.reloadData()
                 self.hideWaitingIndicate()
                 self.isMoreDataLoading = false
-            }) { (err: NSError) in
+            }) { (err: Error) in
                 self.showErrorIndicate()
                 print("Err")
                 print(err.localizedDescription)
                 self.isMoreDataLoading = false
             }
         }
-        else if timelineMode == .ProfileTimeline {
+        else if timelineMode == .profileTimeline {
             
             if let userID = userID {
-                TwitterClient.sharedInstance.userTimeline(withId: userID,success: { (tweets: [Tweet]) in
+                TwitterClient.sharedInstance?.userTimeline(withId: userID,success: { (tweets: [Tweet]) in
                     self.tweets = tweets
                     self.mainTableView.reloadData()
                     self.hideWaitingIndicate()
                     self.isMoreDataLoading = false
-                }) { (err: NSError) in
+                }) { (err: Error) in
                     self.showErrorIndicate()
                     print("Err")
                     print(err.localizedDescription)
@@ -263,12 +263,12 @@ extension TimelineTableViewController: UIScrollViewDelegate {
                 }
             }
             else {
-                TwitterClient.sharedInstance.userTimeline({ (tweets: [Tweet]) in
+                TwitterClient.sharedInstance?.userTimeline({ (tweets: [Tweet]) in
                     self.tweets = tweets
                     self.mainTableView.reloadData()
                     self.hideWaitingIndicate()
                     self.isMoreDataLoading = false
-                }) { (err: NSError) in
+                }) { (err: Error) in
                     self.showErrorIndicate()
                     print("Err")
                     print(err.localizedDescription)
@@ -280,40 +280,40 @@ extension TimelineTableViewController: UIScrollViewDelegate {
     
     func fetchMoreData() {
         showWaitingIndicate()
-        if timelineMode == .HomeTimeline {
-            TwitterClient.sharedInstance.homeTimeline({ (tweets: [Tweet]) in
+        if timelineMode == .homeTimeline {
+            TwitterClient.sharedInstance?.homeTimeline({ (tweets: [Tweet]) in
                 self.tweets = tweets
                 self.mainTableView.reloadData()
                 self.hideWaitingIndicate()
                 self.isMoreDataLoading = false
-            }) { (err: NSError) in
+            }) { (err: Error) in
                 self.showErrorIndicate()
                 print("Err")
                 print(err.localizedDescription)
                 self.isMoreDataLoading = false
             }
         }
-        else if timelineMode == .MentionTimeline {
-            TwitterClient.sharedInstance.mentionTimeline({ (tweets: [Tweet]) in
+        else if timelineMode == .mentionTimeline {
+            TwitterClient.sharedInstance?.mentionTimeline({ (tweets: [Tweet]) in
                 self.tweets = tweets
                 self.mainTableView.reloadData()
                 self.hideWaitingIndicate()
                 self.isMoreDataLoading = false
-            }) { (err: NSError) in
+            }) { (err: Error) in
                 self.showErrorIndicate()
                 print("Err")
                 print(err.localizedDescription)
                 self.isMoreDataLoading = false
             }
         }
-        else if timelineMode == .ProfileTimeline {
+        else if timelineMode == .profileTimeline {
             if let userID = userID {
-                TwitterClient.sharedInstance.userTimeline(withId: userID,success: { (tweets: [Tweet]) in
+                TwitterClient.sharedInstance?.userTimeline(withId: userID,success: { (tweets: [Tweet]) in
                     self.tweets = tweets
                     self.mainTableView.reloadData()
                     self.hideWaitingIndicate()
                     self.isMoreDataLoading = false
-                }) { (err: NSError) in
+                }) { (err: Error) in
                     self.showErrorIndicate()
                     print("Err")
                     print(err.localizedDescription)
@@ -321,12 +321,12 @@ extension TimelineTableViewController: UIScrollViewDelegate {
                 }
             }
             else {
-                TwitterClient.sharedInstance.userTimeline({ (tweets: [Tweet]) in
+                TwitterClient.sharedInstance?.userTimeline({ (tweets: [Tweet]) in
                     self.tweets = tweets
                     self.mainTableView.reloadData()
                     self.hideWaitingIndicate()
                     self.isMoreDataLoading = false
-                }) { (err: NSError) in
+                }) { (err: Error) in
                     self.showErrorIndicate()
                     print("Err")
                     print(err.localizedDescription)
@@ -337,12 +337,13 @@ extension TimelineTableViewController: UIScrollViewDelegate {
     }
     
     func showWaitingIndicate() {
-        SwiftLoader.show(title: "Loading...", animated: true)
+//        SwiftLoader.show(title: "Loading...", animated: true)
+    
         hideErrorIndicate()
     }
     
     func hideWaitingIndicate() {
-        SwiftLoader.hide()
+//        SwiftLoader.hide()
         refreshControl.endRefreshing()
     }
     
@@ -356,18 +357,18 @@ extension TimelineTableViewController: UIScrollViewDelegate {
     
     // MARK: Refresh controll
     
-    func refreshControlAction(refreshControl: UIRefreshControl) {
+    func refreshControlAction(_ refreshControl: UIRefreshControl) {
         fetchDataTimeline()
     }
     
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         scrollStateChangeDelegate?.onScrollChange(scrollView)
         
         if (!isMoreDataLoading) {
             let scrollViewContentHeight = mainTableView.contentSize.height
             let scrollOffsetThreshold = scrollViewContentHeight - mainTableView.bounds.size.height
-            if(scrollView.contentOffset.y > scrollOffsetThreshold && mainTableView.dragging) {
+            if(scrollView.contentOffset.y > scrollOffsetThreshold && mainTableView.isDragging) {
                 isMoreDataLoading = true
                 fetchDataTimeline()
             }

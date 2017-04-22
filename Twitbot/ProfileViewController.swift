@@ -29,27 +29,26 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.translucent = true
-        self.navigationController?.view.backgroundColor = UIColor.clearColor()
-        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        self.navigationController?.navigationItem.titleView?.tintColor = UIColor.whiteColor()
+        self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.view.backgroundColor = UIColor.clear
+        self.navigationController?.navigationBar.tintColor = UIColor.white
+        self.navigationController?.navigationItem.titleView?.tintColor = UIColor.white
         
-        userAvatarImage.setImageWithURL((user?.profileHighUrl)!)
+        userAvatarImage.setImageWith((user?.profileHighUrl)! as URL)
         userAvatarImage.clipsToBounds = true
         userAvatarImage.layer.cornerRadius = userAvatarImage.frame.size.height / 2
         
         usernameLabel.text = user?.name
         
-        userCoverImage.setImageWithURL((user?.profileCoverUrl)!)
+        userCoverImage.setImageWith((user?.profileCoverUrl)! as URL)
         
         userFollowerCount.text = "\((user?.followerCount)!)"
         userFollowingCount.text = "\((user?.followingCount)!)"
         userTweetCount.text = "\((user?.favoritesCount)!)"
         
-        
-        dataBrigde = TimelineTableViewController(tblView: mainTweetTableView, mode: FetchDataMode.ProfileTimeline)
+        dataBrigde = TimelineTableViewController(tblView: mainTweetTableView, mode: FetchDataMode.profileTimeline)
         dataBrigde?.userID = user?.userID
         dataBrigde?.scrollStateChangeDelegate = self
     }
@@ -59,27 +58,27 @@ class ProfileViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func onToggleSideMenuState(sender: UIBarButtonItem) {
+    @IBAction func onToggleSideMenuState(_ sender: UIBarButtonItem) {
         sideMenuCallback?.onToggleSideMenuState()
     }
     
-    @IBAction func onBack(sender: UIBarButtonItem) {
+    @IBAction func onBack(_ sender: UIBarButtonItem) {
         
     }
     
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ProfileToProfile" {
             let gesture = sender as! UITapGestureRecognizer
             let cellContentView = gesture.view?.superview?.superview as! UITableViewCell
             
-            let indexPath = mainTweetTableView.indexPathForCell(cellContentView)
+            let indexPath = mainTweetTableView.indexPath(for: cellContentView)
             
-            let targetVC = (segue.destinationViewController as! UINavigationController).viewControllers[0] as! ProfileViewController
+            let targetVC = (segue.destination as! UINavigationController).viewControllers[0] as! ProfileViewController
             
-            targetVC.user = dataBrigde?.tweets![(indexPath?.row)!].user
+            targetVC.user = dataBrigde?.tweets![((indexPath as NSIndexPath?)?.row)!].user
             targetVC.sideMenuCallback = self.sideMenuCallback
         }
     }
@@ -87,7 +86,7 @@ class ProfileViewController: UIViewController {
 }
 
 extension ProfileViewController: ScrollStateChangeDelegate {
-    func onScrollChange(sender: UIScrollView) {
+    func onScrollChange(_ sender: UIScrollView) {
 //        tableTopConstraint.constant = sender.contentOffset.y
     }
 }

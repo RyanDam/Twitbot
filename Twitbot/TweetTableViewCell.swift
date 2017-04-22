@@ -9,9 +9,9 @@
 import UIKit
 
 protocol TweetTableViewCellDelegate: NSObjectProtocol {
-    func onShare(sender: TweetTableViewCell) -> Void
-    func onTweet(sender: TweetTableViewCell) -> Void
-    func onLike(sender: TweetTableViewCell) -> Void
+    func onShare(_ sender: TweetTableViewCell) -> Void
+    func onTweet(_ sender: TweetTableViewCell) -> Void
+    func onLike(_ sender: TweetTableViewCell) -> Void
 }
 
 class TweetTableViewCell: UITableViewCell {
@@ -38,10 +38,10 @@ class TweetTableViewCell: UITableViewCell {
     var isLiked: Bool = false {
         didSet {
             if isLiked {
-                likeButton.setImage(UIImage(named: "like-ed"), forState: UIControlState.Normal)
+                likeButton.setImage(UIImage(named: "like-ed"), for: UIControlState())
             }
             else {
-                likeButton.setImage(UIImage(named: "like"), forState: UIControlState.Normal)
+                likeButton.setImage(UIImage(named: "like"), for: UIControlState())
             }
         }
     }
@@ -49,24 +49,24 @@ class TweetTableViewCell: UITableViewCell {
     var isRetweeted: Bool = false {
         didSet {
             if isRetweeted {
-                retweetButton.setImage(UIImage(named: "retweeted"), forState: UIControlState.Normal)
+                retweetButton.setImage(UIImage(named: "retweeted"), for: UIControlState())
             }
             else {
-                retweetButton.setImage(UIImage(named: "retweet"), forState: UIControlState.Normal)
+                retweetButton.setImage(UIImage(named: "retweet"), for: UIControlState())
             }
         }
     }
     
-    func showRetweetIndicate(name: String) {
-        retweetImageIndicate.hidden = false
-        retweetLabelIndicate.hidden = false
+    func showRetweetIndicate(_ name: String) {
+        retweetImageIndicate.isHidden = false
+        retweetLabelIndicate.isHidden = false
         retweetLabelIndicate.text = "\(name) retweeted:"
         avatarTopContraint.constant = 16
     }
     
     func hideRetweetIndicate() {
-        retweetImageIndicate.hidden = true
-        retweetLabelIndicate.hidden = true
+        retweetImageIndicate.isHidden = true
+        retweetLabelIndicate.isHidden = true
         avatarTopContraint.constant = -8
     }
     
@@ -74,34 +74,34 @@ class TweetTableViewCell: UITableViewCell {
         super.awakeFromNib()
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         // Configure the view for the selected state
     }
 
-    func setImageToPreview(url: NSURL) {
-        imagePreview.setImageWithURL(url)
-        imagePreview.setImageWithURLRequest(NSURLRequest(URL: url), placeholderImage: UIImage(), success: { (request: NSURLRequest, response: NSHTTPURLResponse?, img: UIImage) in
+    func setImageToPreview(_ url: URL) {
+        imagePreview.setImageWith(url)
+        imagePreview.setImageWith(URLRequest(url: url), placeholderImage: UIImage(), success: { (request: URLRequest, response: HTTPURLResponse?, img: UIImage) in
             self.callback?.reloadData()
-        }) { (request: NSURLRequest, response: NSHTTPURLResponse?, err: NSError) in
+        }) { (request: URLRequest, response: HTTPURLResponse?, err: Error) in
             print(err.localizedDescription)
         }
-        imagePreview.hidden = false
+        imagePreview.isHidden = false
         topReplyButtonConstraint.constant = 8
     }
     
     func noneImage() {
-        imagePreview.hidden = true
+        imagePreview.isHidden = true
         topReplyButtonConstraint.constant = -150
     }
     
-    @IBAction func onShare(sender: UIButton) {
+    @IBAction func onShare(_ sender: UIButton) {
         self.delegate?.onShare(self)
     }
-    @IBAction func onTweet(sender: UIButton) {
+    @IBAction func onTweet(_ sender: UIButton) {
         self.delegate?.onTweet(self)
     }
-    @IBAction func onLike(sender: UIButton) {
+    @IBAction func onLike(_ sender: UIButton) {
         self.delegate?.onLike(self)
     }
 }

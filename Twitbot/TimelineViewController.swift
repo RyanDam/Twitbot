@@ -19,7 +19,7 @@ class TimelineViewController: UIViewController {
     
     var dataBridge: TimelineTableViewController?
     
-    var timelineMode: FetchDataMode = FetchDataMode.HomeTimeline
+    var timelineMode: FetchDataMode = FetchDataMode.homeTimeline
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,23 +33,23 @@ class TimelineViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        UIApplication.sharedApplication().statusBarStyle = .Default
+        UIApplication.shared.statusBarStyle = .default
     }
 
-    @IBAction func onLogout(sender: UIBarButtonItem) {
+    @IBAction func onLogout(_ sender: UIBarButtonItem) {
         sideMenuCallback?.onToggleSideMenuState()
     }
     
     // MARK: - Navigation
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ViewTweet" {
             let cell = sender as! TweetTableViewCell
-            let indexPath = mainTableView.indexPathForCell(cell)!
-            let tweet = self.dataBridge!.tweets![indexPath.row]
-            let targetView = (segue.destinationViewController as! UINavigationController).viewControllers[0] as! TweetViewController
+            let indexPath = mainTableView.indexPath(for: cell)!
+            let tweet = self.dataBridge!.tweets![(indexPath as NSIndexPath).row]
+            let targetView = (segue.destination as! UINavigationController).viewControllers[0] as! TweetViewController
             targetView.tweet = tweet
         }
         else if segue.identifier == "NewTweet" {
@@ -57,18 +57,19 @@ class TimelineViewController: UIViewController {
         }
     }
  
-    @IBAction func onSaveUnwind(segue: UIStoryboardSegue) {
-        let source = segue.sourceViewController as! NewTweetViewController
+    @IBAction func onSaveUnwind(_ segue: UIStoryboardSegue) {
+        let source = segue.source as! NewTweetViewController
         let text = source.inputWord.text
-        if text.characters.count > 0 {
-            TwitterClient.sharedInstance.newTweet(text, success: { (tweet: Tweet?) in
+        if (text?.characters.count)! > 0 {
+            
+            TwitterClient.sharedInstance?.newTweet(text!, success: { (tweet: Tweet?) in
                 if let tweet = tweet {
-                    self.dataBridge!.tweets?.insert(tweet, atIndex: 0)
+                    self.dataBridge!.tweets?.insert(tweet, at: 0)
                     self.mainTableView.reloadData()
                 }
-            }) { (err: NSError) in
+            }, failure: { (err: Error) in
                 print(err.localizedDescription)
-            }
+            })
         }
     }
     

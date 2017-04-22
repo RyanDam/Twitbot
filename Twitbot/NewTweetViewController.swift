@@ -7,6 +7,26 @@
 //
 
 import UIKit
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class NewTweetViewController: UIViewController, UITextViewDelegate {
 
@@ -24,7 +44,7 @@ class NewTweetViewController: UIViewController, UITextViewDelegate {
 
         username.text = User.currentUser?.name
         userScreenName.text = User.currentUser?.screenName
-        userAvatar.setImageWithURL((User.currentUser?.profileUrl)!)
+        userAvatar.setImageWith((User.currentUser?.profileUrl)! as URL)
         userAvatar.layer.cornerRadius = 8
         inputWord.delegate = self
         inputTextColor = inputWord.textColor!
@@ -38,18 +58,18 @@ class NewTweetViewController: UIViewController, UITextViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    func textViewDidChange(sender: UITextView) {
+    func textViewDidChange(_ sender: UITextView) {
         if sender.text?.characters.count > 140 {
             wordCounterLabel.text = "140/140"
-            let index = sender.text?.endIndex.advancedBy(-((sender.text?.characters.count)! - 140))
-            sender.text = sender.text?.substringToIndex(index!)
+            let index = sender.text?.characters.index((sender.text?.endIndex)!, offsetBy: -((sender.text?.characters.count)! - 140))
+            sender.text = sender.text?.substring(to: index!)
         }
         else {
             wordCounterLabel.text = "\((sender.text?.characters.count)!)/140"
         }
     }
     
-    func textViewShouldEndEditing(sender: UITextView) -> Bool {
+    func textViewShouldEndEditing(_ sender: UITextView) -> Bool {
         if sender.text!.characters.count == 0 {
             setPlaceHoderMode()
         }
@@ -58,20 +78,20 @@ class NewTweetViewController: UIViewController, UITextViewDelegate {
     
     var isPlaceholderMode = false
     
-    func textViewShouldBeginEditing(sender: UITextView) -> Bool {
+    func textViewShouldBeginEditing(_ sender: UITextView) -> Bool {
         if isPlaceholderMode {
             isPlaceholderMode = false
-            inputWord.setPlaceHolder("", color: inputTextColor)
+            inputWord.setPlaceHolder(text: "", color: inputTextColor)
         }
         return true
     }
 
     func setPlaceHoderMode() {
         isPlaceholderMode = true
-        inputWord.setPlaceHolder("Tap to compose new tweet...", color: UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 1))
+        inputWord.setPlaceHolder(text: "Tap to compose new tweet...", color: UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 1))
     }
     
-    @IBAction func onTapOutside(sender: UITapGestureRecognizer) {
+    @IBAction func onTapOutside(_ sender: UITapGestureRecognizer) {
         inputWord.endEditing(true)
     }
 }

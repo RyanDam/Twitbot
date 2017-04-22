@@ -175,12 +175,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 940F5DDD1CA2FCCF005DC13C /* Build configuration list for PBXNativeTarget "Twitbot" */;
 			buildPhases = (
-				F5D3D54D55A6CFE5302BC806 /* Check Pods Manifest.lock */,
+				F5D3D54D55A6CFE5302BC806 /* [CP] Check Pods Manifest.lock */,
 				940F5DC71CA2FCCF005DC13C /* Sources */,
 				940F5DC81CA2FCCF005DC13C /* Frameworks */,
 				940F5DC91CA2FCCF005DC13C /* Resources */,
-				9DDFD28EFB5C986BA45752C6 /* Embed Pods Frameworks */,
-				AE6B9D30565FF19D1F1FE8BC /* Copy Pods Resources */,
+				9DDFD28EFB5C986BA45752C6 /* [CP] Embed Pods Frameworks */,
+				AE6B9D30565FF19D1F1FE8BC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -198,12 +198,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = dotRStudio;
 				TargetAttributes = {
 					940F5DCA1CA2FCCF005DC13C = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = M3984GFJZF;
+						LastSwiftMigration = 0830;
 					};
 				};
 			};
@@ -241,14 +242,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		9DDFD28EFB5C986BA45752C6 /* Embed Pods Frameworks */ = {
+		9DDFD28EFB5C986BA45752C6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -256,14 +257,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Twitbot/Pods-Twitbot-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		AE6B9D30565FF19D1F1FE8BC /* Copy Pods Resources */ = {
+		AE6B9D30565FF19D1F1FE8BC /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -271,14 +272,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Twitbot/Pods-Twitbot-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F5D3D54D55A6CFE5302BC806 /* Check Pods Manifest.lock */ = {
+		F5D3D54D55A6CFE5302BC806 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -348,8 +349,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -393,8 +396,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -413,6 +418,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -421,11 +427,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2560ED78C960B04EC245B749 /* Pods-Twitbot.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Twitbot/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RStudio.ios.coderschool.Twitbot;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -433,11 +441,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1EE023E4C39C5543C83B7835 /* Pods-Twitbot.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Twitbot/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RStudio.ios.coderschool.Twitbot;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

@@ -14,9 +14,9 @@ class User: NSObject {
     var userID: String?
     var name: String?
     var screenName: String?
-    var profileUrl: NSURL?
-    var profileHighUrl: NSURL?
-    var profileCoverUrl: NSURL?
+    var profileUrl: URL?
+    var profileHighUrl: URL?
+    var profileCoverUrl: URL?
     var tagline: String?
     var favoritesCount = 0
     var followingCount = 0
@@ -30,14 +30,14 @@ class User: NSObject {
         screenName = dictionary["screen_name"] as? String
         
         if let profileUrl = dictionary["profile_image_url_https"] as? String {
-            let arr = profileUrl.componentsSeparatedByString("_normal")
+            let arr = profileUrl.components(separatedBy: "_normal")
             let proHigh = arr[0] + arr[1]
-            self.profileHighUrl = NSURL(string: proHigh)
-            self.profileUrl = NSURL(string: profileUrl)
+            self.profileHighUrl = URL(string: proHigh)
+            self.profileUrl = URL(string: profileUrl)
         }
         
         if let profileCoverUrl = dictionary["profile_banner_url"] as? String {
-            self.profileCoverUrl = NSURL(string: profileCoverUrl)
+            self.profileCoverUrl = URL(string: profileCoverUrl)
         }
         userID = dictionary["id_str"] as? String
         favoritesCount = dictionary["favourites_count"] as! Int
@@ -51,10 +51,10 @@ class User: NSObject {
     class var currentUser: User? {
         get {
             if _currentUser == nil {
-                let defaults = NSUserDefaults.standardUserDefaults()
-                let userData = defaults.objectForKey("currentUserData") as? NSData
+                let defaults = UserDefaults.standard
+                let userData = defaults.object(forKey: "currentUserData") as? Data
                 if let userData = userData {
-                    let dictionary = try! NSJSONSerialization.JSONObjectWithData(userData, options: [])
+                    let dictionary = try! JSONSerialization.jsonObject(with: userData, options: [])
                     _currentUser = User(dictionary: dictionary as! NSDictionary)
                 }
                 else {
@@ -66,13 +66,13 @@ class User: NSObject {
         
         set(user) {
             _currentUser = user
-            let defaults = NSUserDefaults.standardUserDefaults()
+            let defaults = UserDefaults.standard
             if let user = user {
-                let data = try! NSJSONSerialization.dataWithJSONObject(user.dictionary!, options: [])
-                defaults.setObject(data, forKey: "currentUserData")
+                let data = try! JSONSerialization.data(withJSONObject: user.dictionary!, options: [])
+                defaults.set(data, forKey: "currentUserData")
             }
             else {
-                defaults.setObject(nil, forKey: "currentUserData")
+                defaults.set(nil, forKey: "currentUserData")
             }
             defaults.synchronize()
         }

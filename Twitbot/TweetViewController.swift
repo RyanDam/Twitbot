@@ -29,11 +29,11 @@ class TweetViewController: UIViewController {
     var isLiked: Bool = false {
         didSet {
             if isLiked {
-                favoriteButton.setImage(UIImage(named: "like-ed"), forState: UIControlState.Normal)
+                favoriteButton.setImage(UIImage(named: "like-ed"), for: UIControlState())
             }
             else {
                 
-                favoriteButton.setImage(UIImage(named: "like"), forState: UIControlState.Normal)
+                favoriteButton.setImage(UIImage(named: "like"), for: UIControlState())
             }
         }
     }
@@ -41,10 +41,10 @@ class TweetViewController: UIViewController {
     var isUserRetweeted: Bool = false {
         didSet {
             if isUserRetweeted {
-                retweetButton.setImage(UIImage(named: "retweeted"), forState: UIControlState.Normal)
+                retweetButton.setImage(UIImage(named: "retweeted"), for: UIControlState())
             }
             else {
-                retweetButton.setImage(UIImage(named: "retweet"), forState: UIControlState.Normal)
+                retweetButton.setImage(UIImage(named: "retweet"), for: UIControlState())
             }
         }
     }
@@ -87,20 +87,20 @@ class TweetViewController: UIViewController {
                     timeRet = "\(Int(time/(60*60)))h"
                 }
                 else {
-                    let calendar = NSCalendar.currentCalendar()
-                    let comp = calendar.components([.Day, .Month], fromDate: date)
-                    timeRet = "\(comp.day)\\\(comp.month)"
+                    let calendar = Calendar.current
+                    let comp = (calendar as NSCalendar).components([.day, .month], from: date as Date)
+                    timeRet = "\(String(describing: comp.day))\\\(String(describing: comp.month))"
                 }
                 self.timestamp.text = timeRet
             }
             
             if tweet.isRetweeted {
-                self.showRetweetIndicate(tweet.user!.name!)
+                self.showRetweetIndicate(name: tweet.user!.name!)
                 self.tweetText.text = tweet.sourceTweet!.text
                 self.username.text = tweet.sourceTweet!.user!.name
                 self.userScreenName.text = "@\(tweet.sourceTweet!.user!.screenName!)"
                 if let avatar = tweet.sourceTweet!.user!.profileUrl {
-                    self.userAvatar.setImageWithURL(avatar)
+                    self.userAvatar.setImageWith(avatar as URL)
                 }
             }
             else {
@@ -109,7 +109,7 @@ class TweetViewController: UIViewController {
                 self.username.text = tweet.user!.name
                 self.userScreenName.text = "@\(tweet.user!.screenName!)"
                 if let avatar = tweet.user!.profileUrl {
-                    self.userAvatar.setImageWithURL(avatar)
+                    self.userAvatar.setImageWith(avatar as URL)
                 }
             }
             
@@ -117,7 +117,7 @@ class TweetViewController: UIViewController {
             self.isLiked = tweet.isFavourited!
             
             if let medias = tweet.media {
-                setImageToPreview(medias[0].imageUrl!)
+                setImageToPreview(url: medias[0].imageUrl! as URL)
             }
             else {
                 noneImage()
@@ -125,32 +125,34 @@ class TweetViewController: UIViewController {
         }
     }
 
-    func setImageToPreview(url: NSURL) {
-        imagePreview.setImageWithURL(url)
-        imagePreview.setImageWithURLRequest(NSURLRequest(URL: url), placeholderImage: UIImage(), success: { (request: NSURLRequest, response: NSHTTPURLResponse?, img: UIImage) in
+    func setImageToPreview(url: URL) {
+        imagePreview.setImageWith(url)
+        
+        imagePreview.setImageWith(URLRequest(url: url), placeholderImage: UIImage(), success: { (request: URLRequest, response: HTTPURLResponse?, img: UIImage) in
             // code
-        }) { (request: NSURLRequest, response: NSHTTPURLResponse?, err: NSError) in
+        }) { (request: URLRequest, response: HTTPURLResponse?, err: Error) in
             print(err.localizedDescription)
         }
-        imagePreview.hidden = false
+        
+        imagePreview.isHidden = false
         topConstraintReplyButton.constant = 8
     }
     
     func noneImage() {
-        imagePreview.hidden = true
+        imagePreview.isHidden = true
         topConstraintReplyButton.constant = -150
     }
     
     func showRetweetIndicate(name: String) {
-        retweetImageIndicate.hidden = false
-        retweetLabelIndicate.hidden = false
+        retweetImageIndicate.isHidden = false
+        retweetLabelIndicate.isHidden = false
         retweetLabelIndicate.text = "\(name) retweeted:"
         avatarTopConstraint.constant = 16
     }
     
     func hideRetweetIndicate() {
-        retweetImageIndicate.hidden = true
-        retweetLabelIndicate.hidden = true
+        retweetImageIndicate.isHidden = true
+        retweetLabelIndicate.isHidden = true
         avatarTopConstraint.constant = -8
     }
     
@@ -159,21 +161,21 @@ class TweetViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func onBack(sender: UIBarButtonItem) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func onBack(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
     }
 
-    @IBAction func onReply(sender: UIBarButtonItem) {
+    @IBAction func onReply(_ sender: UIBarButtonItem) {
         
     }
-    @IBAction func onReplyButton(sender: AnyObject) {
+    @IBAction func onReplyButton(_ sender: AnyObject) {
     }
     
-    @IBAction func onRetweetButton(sender: AnyObject) {
+    @IBAction func onRetweetButton(_ sender: AnyObject) {
         onTweet()
     }
     
-    @IBAction func onFavoriteButton(sender: AnyObject) {
+    @IBAction func onFavoriteButton(_ sender: AnyObject) {
         onLike()
     }
     
@@ -184,7 +186,7 @@ class TweetViewController: UIViewController {
         let sender = self
         let tweet = self.tweet
         if !tweet!.isUserRetweeted! {
-            TwitterClient.sharedInstance.retweet(tweet!.idStr!, success: { (tweeted: Tweet?) in
+            TwitterClient.sharedInstance?.retweet(tweet!.idStr!, success: { (tweeted: Tweet?) in
                 let tweet = self.tweet
                 tweet!.retweetCount += 1
                 if tweet!.retweetCount > 2000 {
@@ -195,12 +197,12 @@ class TweetViewController: UIViewController {
                 }
                 sender.tweet!.isUserRetweeted = !sender.tweet!.isUserRetweeted!
                 sender.isUserRetweeted = !sender.isUserRetweeted
-                }, failure: { (err: NSError) in
+                }, failure: { (err: Error) in
                     print(err.localizedDescription)
             })
         }
         else {
-            TwitterClient.sharedInstance.unRetweet(tweet!.idStr!, success: { (tweeted: Tweet?) in
+            TwitterClient.sharedInstance?.unRetweet(tweet!.idStr!, success: { (tweeted: Tweet?) in
                 let tweet = self.tweet
                 tweet!.retweetCount -= 1
                 if tweet!.retweetCount > 2000 {
@@ -211,7 +213,7 @@ class TweetViewController: UIViewController {
                 }
                 sender.tweet!.isUserRetweeted = !sender.tweet!.isUserRetweeted!
                 sender.isUserRetweeted = !sender.isUserRetweeted
-                }, failure: { (err: NSError) in
+                }, failure: { (err: Error) in
                     print(err.localizedDescription)
             })
         }
@@ -221,7 +223,7 @@ class TweetViewController: UIViewController {
         let sender = self
         let tweet = self.tweet!
         if !tweet.isFavourited! {
-            TwitterClient.sharedInstance.favorite(tweet.idStr!, success: { (tweeted: Tweet?) in
+            TwitterClient.sharedInstance?.favorite(tweet.idStr!, success: { (tweeted: Tweet?) in
                 let tweet = self.tweet!
                 tweet.favoritesCount += 1
                 if tweet.favoritesCount > 2000 {
@@ -232,12 +234,12 @@ class TweetViewController: UIViewController {
                 }
                 sender.isLiked = !sender.isLiked
                 tweet.isFavourited = sender.isLiked
-                }, failure: { (err: NSError) in
+                }, failure: { (err: Error) in
                     print(err.localizedDescription)
             })
         }
         else {
-            TwitterClient.sharedInstance.unFavorite(tweet.idStr!, success: { (tweeted: Tweet?) in
+            TwitterClient.sharedInstance?.unFavorite(tweet.idStr!, success: { (tweeted: Tweet?) in
                 let tweet = self.tweet!
                 tweet.favoritesCount -= 1
                 if tweet.favoritesCount > 2000 {
@@ -248,7 +250,7 @@ class TweetViewController: UIViewController {
                 }
                 sender.isLiked = !sender.isLiked
                 tweet.isFavourited = sender.isLiked
-                }, failure: { (err: NSError) in
+                }, failure: { (err: Error) in
                     print(err.localizedDescription)
             })
         }
